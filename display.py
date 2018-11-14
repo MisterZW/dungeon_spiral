@@ -3,7 +3,7 @@ from map_utils import GameMap
 from entity import RenderOrder
 from colors import Colors
 from game_states import GameStates
-from menus import inventory_menu, level_up_menu, character_screen, vendor_main_menu, vendor_buy_menu, vendor_sell_menu
+from menus import inventory_menu, level_up_menu, character_screen, vendor_main_menu, vendor_buy_menu, vendor_sell_menu, controls_screen
 import tdl
 import math
 
@@ -98,6 +98,9 @@ class Display:
 
         elif game_state == GameStates.CHARACTER_SCREEN:
             character_screen(self, player)
+
+        elif game_state == GameStates.SHOW_CONTROLS:
+            controls_screen(self)
 
         elif game_state == GameStates.LEVEL_UP:
             level_up_menu(self, 'LEVEL UP! CHOOSE WHICH STAT TO ADVANCE:', player)

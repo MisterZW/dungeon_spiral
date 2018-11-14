@@ -13,3 +13,4 @@ class GameStates(Enum):
 	VENDOR_SELECT = 10
 	VENDOR_BUY = 11
 	VENDOR_SELL = 12
+	SHOW_CONTROLS = 13

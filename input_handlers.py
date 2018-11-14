@@ -23,7 +23,8 @@ def handle_keys(input, game_state):
 			return handle_level_up_keys(input)
 		elif game_state == GameStates.PLAYER_DEAD:
 			return handle_player_dead_keys(input)
-
+		elif game_state == GameStates.SHOW_CONTROLS:
+			return handle_control_keys(input)
 	return {}
 
 def handle_mouse(mouse_event):
@@ -76,6 +77,10 @@ def handle_player_turn_keys(input):
 	#show character screen
 	elif input.char == 'c':
 		return {'character_screen' : True}
+
+	#show controls screen on '?'
+	elif input.char == '/' and input.shift:
+		return {'controls_screen' : True}
 
 	#enter/exit vendor screen
 	elif input.char == 's':
@@ -242,6 +247,16 @@ def handle_character_screen_keys(input):
 
 	return {}
 
+
+def handle_control_keys(input):
+	#exit menu with ESC or '?'
+	if input.key == 'ESCAPE' or input.char == '/' and input.shift:
+		return{'exit': True}
+	#ALT+ENTER fullscreen
+	if input.key == 'ENTER' and input.alt:
+		return {'fullscreen': True}
+
+	return {}
 
 def handle_level_up_keys(input):
 	if input:

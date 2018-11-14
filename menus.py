@@ -94,7 +94,7 @@ def main_menu(display, background_image):
 
     display.root_console.draw_str(center, display.SCREEN_HEIGHT // 2 - 4, title, bg=Colors.BLACK, fg=Colors.WHITE)
 
-    author = 'Development: ZDW'
+    author = 'Development: ZDW              ? during play shows controls'
     center = (display.SCREEN_WIDTH - len(author)) // 2
     display.root_console.draw_str(center, display.SCREEN_HEIGHT - 2, author, bg=Colors.BLACK, fg=Colors.WHITE)
 
@@ -193,6 +193,34 @@ def character_screen(display, player):
     y = display.SCREEN_HEIGHT // 2 - char_screen_height // 2
     display.root_console.blit(window, x, y, char_screen_width, char_screen_height, 0, 0)
 
+def controls_screen(display):
+    controls_screen_width = 37
+    controls_screen_height = 17
+
+    window = tdl.Console(controls_screen_width, controls_screen_height)
+
+    window.draw_rect(0, 0, controls_screen_width, controls_screen_height, None, fg=Colors.WHITE, bg=None)
+
+    window.draw_str(1, 1, 'GENERAL CONTROLS FOR DUNGEON SPIRAL')
+
+    window.draw_str(1, 3, 'Move: ARROWS, VIKEYS, NUMPAD')
+    window.draw_str(1, 4, 'Wait: PERIOD, NUMPAD 5')
+    window.draw_str(1, 5, 'View entity info: MOUSE HOVER')
+    
+    window.draw_str(1, 7, 'MENU CONRTOLS')
+
+    window.draw_str(1, 9, 'Display inventory: I')
+    window.draw_str(1, 10, 'Display character screen: C')
+    window.draw_str(1, 11, 'Show vendor wares: S')
+    window.draw_str(1, 12, 'Confirm targeting: L-CLICK')
+    window.draw_str(1, 13, 'Cancel targeting: ESC or R-CLICK')
+
+    window.draw_str(1, 15, 'Descend stairs: >')
+    window.draw_str(1, 16, 'Save and quit: ESCAPE')
+   
+    x = display.SCREEN_WIDTH // 2 - controls_screen_width // 2
+    y = display.SCREEN_HEIGHT // 2 - controls_screen_height // 2
+    display.root_console.blit(window, x, y, controls_screen_width, controls_screen_height, 0, 0)
 
 def message_box(display, header, width):
     menu(display, header, [], width)

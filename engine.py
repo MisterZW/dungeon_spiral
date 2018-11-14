@@ -138,6 +138,7 @@ def play(player, entities, game_map, display, state):
         character_screen = action.get('character_screen')
         fullscreen = action.get('fullscreen')
         direction_selected = action.get('direction_selected')
+        controls_screen = action.get('controls_screen')
 
         left_click = mouse_action.get('left_click')
         right_click = mouse_action.get('right_click')
@@ -149,7 +150,7 @@ def play(player, entities, game_map, display, state):
                 state = prev_state
                 prev_state = GameStates.PLAYER_TURN
             elif state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN,
-                GameStates.VENDOR_SELECT):
+                GameStates.VENDOR_SELECT, GameStates.SHOW_CONTROLS):
                 state = prev_state
             elif state in (GameStates.TARGETING, GameStates.DIRECTIONAL_TARGETING):
                 player_turn_results.append({'targeting_cancelled': True})
@@ -200,6 +201,10 @@ def play(player, entities, game_map, display, state):
         if character_screen:
             prev_state = state
             state = GameStates.CHARACTER_SCREEN
+
+        if controls_screen:
+            prev_state = state
+            state = GameStates.SHOW_CONTROLS
 
         if drop:
             prev_state = state
