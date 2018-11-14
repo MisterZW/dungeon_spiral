@@ -3,11 +3,14 @@ from random import randint
 from tdl.map import Map
 from entity import Entity, RenderOrder
 from components.stairs import Stairs
+from components.vendor import Vendor
+from components.inventory import Inventory
 from colors import Colors
 
 from game_messages import Message
 from generators.item_gen import ItemGenerator
 from generators.monster_gen import MonsterGenerator
+from generators.vendor_gen import VendorGenerator
 from generators.random_utils import from_dlvl
 
 class GameMap(Map):
@@ -29,6 +32,7 @@ class GameMap(Map):
 		self.dlvl = dlvl
 		self.item_gen = ItemGenerator(self)
 		self.monster_gen = MonsterGenerator(self)
+		self.vendor_gen = VendorGenerator(self, self.item_gen)
 
 		self.MAX_MONSTERS_PER_ROOM = from_dlvl([[2,1], [3,3], [4,5], [5,7], [6,9]], self.dlvl)
 		self.MAX_ITEMS_PER_ROOM = from_dlvl([[1,1], [2,2], [3,4], [4,6]], self.dlvl)
@@ -47,7 +51,17 @@ class GameMap(Map):
 	def place_entities(self, room):	
 		self.place_monsters(room)
 		self.place_items(room)
-		
+		self.place_vendors(room)
+
+	def place_vendors(self, room):
+		vendor_present = randint(0, 10) > 8
+		if vendor_present:
+			x = randint(room.x1 + 1, room.x2 - 1)
+			y = randint(room.y1 + 1, room.y2 - 1)
+
+			if not any([entity for entity in self.entities if entity.x == x and entity.y == y]):
+				vendor = self.vendor_gen.make_random_vendor(x, y)
+				self.entities.append(vendor)
 
 	def place_monsters(self, room):
 		enemy_count = randint(0, self.MAX_MONSTERS_PER_ROOM)

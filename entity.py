@@ -8,7 +8,8 @@ class RenderOrder(Enum):
     STAIRS = 1
     CORPSE = 2
     ITEM = 3
-    ACTOR = 4
+    VENDOR = 4
+    ACTOR = 5
 
 class Entity:
 
@@ -18,7 +19,7 @@ class Entity:
 	"""
 	
 	def __init__(self, x, y, char, color, name, impassable=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None, 
-		item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None, regeneration=None):
+		item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None, regeneration=None, vendor=None):
 
 		#BASE TRAITS WHICH ALL ENTITIES POSSESS	
 		self.x = x
@@ -39,6 +40,7 @@ class Entity:
 		self.equipment = equipment
 		self.equippable = equippable
 		self.regeneration = regeneration
+		self.vendor = vendor
 
 		if self.fighter:
 			self.fighter.owner = self
@@ -54,6 +56,9 @@ class Entity:
 
 		if self.stairs:
 			self.stairs.owner = self
+
+		if self.vendor:
+			self.vendor.owner = self
 
 		if self.level:
 			self.level.owner = self

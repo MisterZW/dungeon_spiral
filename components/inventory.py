@@ -6,6 +6,7 @@ class Inventory:
 	def __init__(self, capacity):
 		self.base_capacity = capacity
 		self.items = []
+		self.cashola = 0
 
 	@property
 	def capacity(self):
@@ -95,3 +96,13 @@ class Inventory:
 
 	def remove_item(self, item):
 		self.items.remove(item)
+
+	def get_and_remove(self, index):
+		item = None
+		if index < len(self.items):
+			item = self.items[index]
+			eq = self.owner.equipment
+			if item in eq.equipment:
+				self.owner.equipment.toggle_equip(item)
+			self.items.remove(item)
+		return item

@@ -148,7 +148,7 @@ def cast_arcane_storm(*args, **kwargs):
 	for entity in entities:
 		if entity.fighter and entity.distance(target_x, target_y) <= radius:
 			
-			damage = randint(0, entity.fighter.hp - 1)
+			damage = randint(0, entity.fighter.hp + 1)
 			if entity == source:
 				damage = damage // 2 
 			results.extend(entity.fighter.take_damage(damage))
@@ -198,6 +198,43 @@ def cast_gust_of_wind(*args, **kwargs):
 						entity.y += dy
 
 	return results
+
+def cast_leech(*args, **kwargs):
+	caster = args[0]
+	wand = args[1]
+	game_map = kwargs.get('game_map')
+	direction = kwargs.get('direction')
+	max_range = kwargs.get('range')
+
+	results = []
+	healed = 0
+
+	x = caster.x
+	y = caster.y
+
+	dx, dy = get_dxdy(direction)
+
+	wand.item.charges -= 1
+
+	if wand.item.charges > 0 :
+		results.append({'charge_used': True, 'message': Message('A torrent of blood gushes {0}!'.format(direction), Colors.DARK_RED)})
+	else:
+		results.append({'consumed': True, 'message': Message('A torrent of blood gushes {0}! The wand crumbles to dust.'.format(direction), Colors.DARK_RED)})
+
+	for i in range(max_range):
+		x += dx
+		y += dy
+		if (x >= 1 and y >= 1 and x < game_map.W-1 and y < game_map.H-1):
+			for entity in game_map.entities:
+				if entity.x == x and entity.y == y and entity.fighter:
+					damage = randint(0, entity.fighter.hp + 1) + 1
+					results.append({'message': Message('{0} is drained for {1}'.format(entity.name, damage), Colors.DARK_RED)})
+					results.extend(entity.fighter.take_damage(damage))
+					if caster.fighter:
+						caster.fighter.heal(damage)
+
+	return results
+
 
 def cast_dig(*args, **kwargs):
 	caster = args[0]

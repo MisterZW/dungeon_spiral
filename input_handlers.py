@@ -13,6 +13,12 @@ def handle_keys(input, game_state):
 			return handle_inventory_keys(input)
 		elif game_state == GameStates.CHARACTER_SCREEN:
 			return handle_character_screen_keys(input)
+		elif game_state == GameStates.VENDOR_SELECT:
+			return handle_vendor_main_menu(input)
+		elif game_state == GameStates.VENDOR_BUY:
+			return handle_vendor_buy_menu(input)
+		elif game_state == GameStates.VENDOR_SELL:
+			return handle_vendor_sell_menu(input)
 		elif game_state == GameStates.LEVEL_UP:
 			return handle_level_up_keys(input)
 		elif game_state == GameStates.PLAYER_DEAD:
@@ -71,6 +77,10 @@ def handle_player_turn_keys(input):
 	elif input.char == 'c':
 		return {'character_screen' : True}
 
+	#enter/exit vendor screen
+	elif input.char == 's':
+		return {'shop' : True}
+
 	#wait
 	elif (input.char == '.' and not input.shift) or input.key == 'KP5':
 		return {'wait': True}
@@ -90,6 +100,13 @@ def handle_player_turn_keys(input):
 	return {}
 
 def handle_inventory_keys(input):
+
+	if input.key == 'ENTER' and input.alt:
+		return {'fullscreen': True}
+
+	elif input.key == 'ESCAPE':
+		return{'exit': True}
+
 	if not input.char:
 		return {}
 
@@ -97,12 +114,6 @@ def handle_inventory_keys(input):
 
 	if index >= 0:
 		return {'inventory_index': index}
-
-	if input.key == 'ENTER' and input.alt:
-		return {'fullscreen': True}
-
-	elif input.key == 'ESCAPE':
-		return{'exit': True}
 
 	#default to no action
 	return {}
@@ -116,7 +127,60 @@ def handle_main_menu(input):
 			return {'load': True}
 		elif input.char == 'c' or input.key == 'ESCAPE':
 			return {'exit': True}
+		elif input.key == 'ENTER' and input.alt:
+			return {'fullscreen': True}
 
+	return {}
+
+def handle_vendor_main_menu(input):
+	if input:
+		if input.char == 'a':
+			return {'buy': True}
+		elif input.char == 'b':
+			return {'sell': True}
+		elif input.char == 'c' or input.key == 'ESCAPE':
+			return {'exit': True}
+		elif input.key == 'ENTER' and input.alt:
+			return {'fullscreen': True}
+
+	return {}
+
+def handle_vendor_buy_menu(input):
+	if input:
+		if input.key == 'ENTER' and input.alt:
+			return {'fullscreen': True}
+
+		elif input.key == 'ESCAPE':
+			return{'exit': True}
+
+		if not input.char:
+			return {}
+
+		index = ord(input.char) - ord('a')
+
+		if index >= 0:
+			return {'vendor_buy_index': index}
+
+	#default to no action
+	return {}
+
+def handle_vendor_sell_menu(input):
+	if input:
+		if input.key == 'ENTER' and input.alt:
+			return {'fullscreen': True}
+
+		elif input.key == 'ESCAPE':
+			return{'exit': True}
+
+		if not input.char:
+			return {}
+
+		index = ord(input.char) - ord('a')
+
+		if index >= 0:
+			return {'vendor_sell_index': index}
+
+	#default to no action
 	return {}
 
 def handle_player_name_keys(input):
@@ -172,6 +236,9 @@ def handle_directional_targeting_keys(input):
 def handle_character_screen_keys(input):
 	if input.key == 'ESCAPE' or input.char == 'c':
 		return{'exit': True}
+	#ALT+ENTER fullscreen
+	if input.key == 'ENTER' and input.alt:
+		return {'fullscreen': True}
 
 	return {}
 
@@ -188,6 +255,8 @@ def handle_level_up_keys(input):
 			return {'level_up': 'dexterity'}
 		elif input.char == 'e':
 			return {'level_up': 'endurance'}
+		elif input.key == 'ENTER' and input.alt:
+			return {'fullscreen': True}
 
 	return {}
 

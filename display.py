@@ -3,7 +3,7 @@ from map_utils import GameMap
 from entity import RenderOrder
 from colors import Colors
 from game_states import GameStates
-from menus import inventory_menu, level_up_menu, character_screen
+from menus import inventory_menu, level_up_menu, character_screen, vendor_main_menu, vendor_buy_menu, vendor_sell_menu
 import tdl
 import math
 
@@ -84,6 +84,7 @@ class Display:
 
         self.panel.draw_str(1, 0, '{0}'.format(player.name), fg=Colors.WHITE, bg=None)
         self.panel.draw_str(1, 5, 'DUNGEON LEVEL: {0}'.format(self.gmap.dlvl), fg=Colors.WHITE, bg=None)
+        self.panel.draw_str(1, 6, 'CASHOLA: {0}'.format(player.inventory.cashola), fg=Colors.YELLOW, bg=None)
         self.con.draw_str(1, 1, self.get_mouse_targets(mouse_xy))
 
         self.root_console.blit(self.panel, 0, self.PANEL_Y, self.SCREEN_WIDTH, self.PANEL_HEIGHT, 0, 0)
@@ -101,6 +102,22 @@ class Display:
         elif game_state == GameStates.LEVEL_UP:
             level_up_menu(self, 'LEVEL UP! CHOOSE WHICH STAT TO ADVANCE:', player)
 
+        elif game_state == GameStates.VENDOR_SELECT:
+            vendor_main_menu(self, 'HOW CAN I HELP YOU TODAY?', player)
+
+        elif game_state == GameStates.VENDOR_SELL:
+            vendor = None
+            for entity in render_ordered_entities:
+                if entity.vendor and entity.x == player.x and entity.y == player.y:
+                    vendor = entity
+            vendor_sell_menu(self, 'WHAT WOULD YOU LIKE TO BUY?', player, vendor)
+
+        elif game_state == GameStates.VENDOR_BUY:
+            vendor = None
+            for entity in render_ordered_entities:
+                if entity.vendor and entity.x == player.x and entity.y == player.y:
+                    vendor = entity
+            vendor_buy_menu(self, 'WHAT WOULD YOU LIKE TO SELL?', player, vendor)
 
     #get the name of entities selected by the cursor
     def get_mouse_targets(self, mouse_coordinates):

@@ -1,5 +1,5 @@
 from entity import Entity, RenderOrder
-from item_functions import heal, gain_level, cast_fireball, cast_confuse, cast_lightning, cast_arcane_storm, cast_gust_of_wind, cast_dig
+from item_functions import heal, gain_level, cast_fireball, cast_confuse, cast_lightning, cast_arcane_storm, cast_gust_of_wind, cast_dig, cast_leech
 from random import randint
 from generators.random_utils import get_random_key
 from colors import Colors
@@ -15,7 +15,7 @@ class ItemGenerator:
 
 	potions = {'healing potion': 95, 'knowledge potion': 5}
 	scrolls = {'scroll of fireball': 25, 'scroll of confusion': 25, 'scroll of lightning': 25, 'scroll of arcane storm': 25}
-	wands = {'wand of wind': 50, 'wand of digging': 50}
+	wands = {'wand of wind': 40, 'wand of digging': 40, 'wand of blood': 20}
 	amulets = {'daylight brooch': 40}
 	rings = {'ring of protection': 40, 'ring of stealth': 40}
 
@@ -87,8 +87,12 @@ class ItemGenerator:
 
 		if random_wand_type == 'wand of digging':
 			item_component = Item(use_function=cast_dig, directional_targeting=True, targeting_msg=Message(
-					'In which direction? (ESC to cancel)', Colors.WHITE), range=6, charges=5)
+					'In which direction? (ESC to cancel)', Colors.WHITE), range=7, charges=5)
 			item = Entity(x, y, '/', Colors.BROWN, 'wand of digging', render_order=RenderOrder.ITEM, item=item_component)
+		elif random_wand_type == 'wand of blood':
+			item_component = Item(use_function=cast_leech, directional_targeting=True, targeting_msg=Message(
+					'In which direction? (ESC to cancel)', Colors.WHITE), range=4, charges=3)
+			item = Entity(x, y, '/', Colors.DARK_RED, 'wand of blood', render_order=RenderOrder.ITEM, item=item_component)
 		else:	
 			item_component = Item(use_function=cast_gust_of_wind, directional_targeting=True, targeting_msg=Message(
 					'In which direction? (ESC to cancel)', Colors.WHITE), range=6, charges=5)

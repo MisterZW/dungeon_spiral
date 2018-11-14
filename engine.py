@@ -49,7 +49,10 @@ def main():
             new = action.get('new')
             load = action.get('load')
             exit = action.get ('exit')
+            fullscreen = action.get('fullscreen')
 
+            if fullscreen:
+                tdl.set_fullscreen(not tdl.get_fullscreen())
             if show_load_error and (new or load or exit):
                 show_load_error = False
             elif new:
@@ -124,6 +127,11 @@ def play(player, entities, game_map, display, state):
         wait = action.get('wait')
         inventory = action.get('inventory')
         drop = action.get('drop')
+        shop = action.get('shop')
+        buy = action.get('buy')
+        sell = action.get('sell')
+        sell_index = action.get('vendor_sell_index')
+        buy_index = action.get('vendor_buy_index')
         inventory_index = action.get('inventory_index')
         go_down = action.get('go_down')
         level_up = action.get('level_up')
@@ -137,7 +145,11 @@ def play(player, entities, game_map, display, state):
         player_turn_results = []
 
         if exit:
-            if state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN):
+            if state in (GameStates.VENDOR_BUY, GameStates.VENDOR_SELL):
+                state = prev_state
+                prev_state = GameStates.PLAYER_TURN
+            elif state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN,
+                GameStates.VENDOR_SELECT):
                 state = prev_state
             elif state in (GameStates.TARGETING, GameStates.DIRECTIONAL_TARGETING):
                 player_turn_results.append({'targeting_cancelled': True})
@@ -177,6 +189,14 @@ def play(player, entities, game_map, display, state):
             prev_state = state
             state = GameStates.SHOW_INVENTORY
 
+        if buy:
+            prev_state = state
+            state = GameStates.VENDOR_SELL
+
+        if sell:
+            prev_state = state
+            state = GameStates.VENDOR_BUY
+
         if character_screen:
             prev_state = state
             state = GameStates.CHARACTER_SCREEN
@@ -192,6 +212,34 @@ def play(player, entities, game_map, display, state):
             else:
                 player_turn_results.extend(player.inventory.drop(item))
 
+        if buy_index is not None and prev_state != GameStates.PLAYER_DEAD and buy_index < len(player.inventory.items):
+            item = player.inventory.get_and_remove(buy_index)
+            vendor = None
+            for entity in entities:
+                if entity.vendor and entity.x == player.x and entity.y == player.y:
+                    vendor = entity
+            if vendor:
+                vendor.vendor.purchase(item)
+                player.inventory.cashola += item.item.price
+        if sell_index is not None:
+            vendor = None
+            item = None
+            for entity in entities:
+                if entity.vendor and entity.x == player.x and entity.y == player.y:
+                    vendor = entity
+            if vendor:
+                price = vendor.vendor.get_price(sell_index)
+                if price is None:
+                    display.write(Message('I\'m afraid I don\'t have that listing.', Colors.YELLOW))
+                elif player.inventory.cashola < price:
+                    display.write(Message('I\'m afraid you can\'t afford that item.', Colors.YELLOW))
+                else:
+                    item = vendor.vendor.sell(sell_index)
+                    
+            if item:
+                player.inventory.silent_add(item)
+                player.inventory.cashola -= item.item.price
+            
         if go_down and state == GameStates.PLAYER_TURN:
             for entity in entities:
                 if entity.stairs and entity.x == player.x and entity.y == player.y:
@@ -199,6 +247,15 @@ def play(player, entities, game_map, display, state):
                     break
             else:
                 display.write(Message('There are no stairs here.', Colors.YELLOW))
+
+        if shop and state == GameStates.PLAYER_TURN:
+            for entity in entities:
+                if entity.vendor and entity.x == player.x and entity.y == player.y:
+                    prev_state = state
+                    state = GameStates.VENDOR_SELECT
+                    break
+            else:
+                display.write(Message('There are no vendors here.', Colors.YELLOW))
 
         if state == GameStates.TARGETING:
             if left_click:

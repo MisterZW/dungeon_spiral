@@ -61,6 +61,28 @@ def inventory_menu(display, header, player):
 
     menu(display, header, options, inventory_width)
 
+def vendor_main_menu(display, header, player):
+    menu_width = 45
+    options = [' BUY', ' SELL', ' EXIT']
+
+    menu(display, header, options, menu_width)
+
+def vendor_sell_menu(display, header, player, vendor):
+    menu_width = 45
+    options = []
+    for item in vendor.vendor.stock:
+        options.append(item.name)
+
+    menu(display, header, options, menu_width)
+
+def vendor_buy_menu(display, header, player, vendor):
+    menu_width = 45
+    options = []
+    for item in player.inventory.items:
+        options.append(item.name)
+
+    menu(display, header, options, menu_width)
+
 def main_menu(display, background_image):
 
     background_image.scale(display.SCREEN_WIDTH  * 2, display.SCREEN_HEIGHT * 2)
@@ -72,7 +94,7 @@ def main_menu(display, background_image):
 
     display.root_console.draw_str(center, display.SCREEN_HEIGHT // 2 - 4, title, bg=Colors.BLACK, fg=Colors.WHITE)
 
-    author = 'Development:  Prof. W'
+    author = 'Development: ZDW'
     center = (display.SCREEN_WIDTH - len(author)) // 2
     display.root_console.draw_str(center, display.SCREEN_HEIGHT - 2, author, bg=Colors.BLACK, fg=Colors.WHITE)
 
