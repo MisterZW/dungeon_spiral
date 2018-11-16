@@ -55,10 +55,12 @@ class ItemGenerator:
 
 		if random_potion_type == 'healing potion':
 			item_component = Item(use_function=heal)
-			item = Entity(x, y, '!', Colors.DARK_RED, 'healing potion', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '!', Colors.DARK_RED, 'healing potion', render_order=RenderOrder.ITEM, item=item_component,
+				description='recover a small amount of health')
 		else:
 			item_component = Item(use_function=gain_level)
-			item = Entity(x, y, '!', Colors.GREEN, 'knowledge potion', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '!', Colors.GREEN, 'knowledge potion', render_order=RenderOrder.ITEM, item=item_component,
+				description='drink to gain one experience level')
 
 		return item
 
@@ -68,17 +70,21 @@ class ItemGenerator:
 		if random_scroll_type == 'scroll of fireball':
 			item_component = Item(use_function=cast_fireball, targeting=True, targeting_msg=Message(
 				'Left click to select a target, or right click to cancel.', Colors.LIGHT_CYAN), damage=18, radius=3)
-			item = Entity(x, y, '?', Colors.RED, 'scroll of fireball', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '?', Colors.RED, 'scroll of fireball', render_order=RenderOrder.ITEM, item=item_component,
+				description='deals AoE blast damage (scales with distance)')
 		elif random_scroll_type == 'scroll of confusion':
 			item_component = Item(use_function=cast_confuse, targeting=True, targeting_msg=Message(
 				'Left click to select a target, or right click to cancel.', Colors.LIGHT_CYAN), radius=1)
-			item = Entity(x, y, '?', Colors.GREEN, 'scroll of confusion', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '?', Colors.GREEN, 'scroll of confusion', render_order=RenderOrder.ITEM, item=item_component,
+				description='causes enemies to wander')
 		elif random_scroll_type == 'scroll of lightning':
 			item_component = Item(use_function=cast_lightning, damage=25, max_range=5)
-			item = Entity(x, y, '?', Colors.YELLOW, 'scroll of lightning', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '?', Colors.YELLOW, 'scroll of lightning', render_order=RenderOrder.ITEM, item=item_component,
+				description='deals 25 damage to nearest enemy')
 		else:
 			item_component = Item(use_function=cast_arcane_storm, radius=4)
-			item = Entity(x, y, '?', Colors.PURPLE, 'scroll of arcane storm', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '?', Colors.PURPLE, 'scroll of arcane storm', render_order=RenderOrder.ITEM, item=item_component,
+				description='damages and warps all nearby creatures')
 
 		return item
 
@@ -88,15 +94,18 @@ class ItemGenerator:
 		if random_wand_type == 'wand of digging':
 			item_component = Item(use_function=cast_dig, directional_targeting=True, targeting_msg=Message(
 					'In which direction? (ESC to cancel)', Colors.WHITE), range=7, charges=5)
-			item = Entity(x, y, '/', Colors.BROWN, 'wand of digging', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '/', Colors.BROWN, 'wand of digging', render_order=RenderOrder.ITEM, item=item_component,
+				description='blasts paths through the earth')
 		elif random_wand_type == 'wand of blood':
 			item_component = Item(use_function=cast_leech, directional_targeting=True, targeting_msg=Message(
 					'In which direction? (ESC to cancel)', Colors.WHITE), range=4, charges=3)
-			item = Entity(x, y, '/', Colors.DARK_RED, 'wand of blood', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '/', Colors.DARK_RED, 'wand of blood', render_order=RenderOrder.ITEM, item=item_component,
+				description='steals the life force of your foes')
 		else:	
 			item_component = Item(use_function=cast_gust_of_wind, directional_targeting=True, targeting_msg=Message(
 					'In which direction? (ESC to cancel)', Colors.WHITE), range=6, charges=5)
-			item = Entity(x, y, '/', Colors.WHITE, 'wand of wind', render_order=RenderOrder.ITEM, item=item_component)
+			item = Entity(x, y, '/', Colors.WHITE, 'wand of wind', render_order=RenderOrder.ITEM, item=item_component,
+				description='unleashes a targeted blast of wind')
 
 		return item
 
@@ -104,7 +113,8 @@ class ItemGenerator:
 		random_amulet_type = get_random_key(self.amulets)
 
 		equippable_component = Equippable(EquipmentSlots.NECK, fov_bonus=3, accuracy_bonus=1)
-		item = Entity(x, y, '"', Colors.YELLOW, 'daylight brooch', equippable=equippable_component)
+		item = Entity(x, y, '"', Colors.YELLOW, 'daylight brooch', equippable=equippable_component,
+			description='+3 light radius, +1 accuracy')
 
 		return item
 
@@ -113,10 +123,12 @@ class ItemGenerator:
 		random_ring_type = get_random_key(self.rings)
 		if random_ring_type == 'ring of protection':
 			equippable_component = Equippable(EquipmentSlots.L_FINGER, armor_bonus=1, defense_bonus=1)
-			item = Entity(x, y, '=', Colors.VIOLET, 'ring of protection', equippable=equippable_component)
+			item = Entity(x, y, '=', Colors.VIOLET, 'ring of protection', equippable=equippable_component,
+				description='+1 armor, +1 defense')
 		else:
 			equippable_component = Equippable(EquipmentSlots.R_FINGER, stealth_bonus=3)
-			item = Entity(x, y, '=', Colors.VIOLET, 'ring of stealth', equippable=equippable_component)
+			item = Entity(x, y, '=', Colors.VIOLET, 'ring of stealth', equippable=equippable_component,
+				description='+3 stealth')
 
 		return item
 
@@ -126,52 +138,70 @@ class ItemGenerator:
 		
 		if random_equip_type == 'sword':
 			equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=3, accuracy_bonus=1)
-			item = Entity(x, y, '|', Colors.SKY, 'sword', equippable=equippable_component)
+			item = Entity(x, y, '|', Colors.SKY, 'sword', equippable=equippable_component,
+				description='+3 power, +1 accuracy')
 		elif random_equip_type == 'hammer':
 			equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=4, accuracy_bonus=-1)
-			item = Entity(x, y, '|', Colors.DARK_ORANGE, 'hammer', equippable=equippable_component)
+			item = Entity(x, y, '|', Colors.DARK_ORANGE, 'hammer', equippable=equippable_component,
+				description='+4 power, -1 accuracy')
 		elif random_equip_type == 'shield':
 			equippable_component = Equippable(EquipmentSlots.OFF_HAND, defense_bonus=2)
-			item = Entity(x, y, '[', Colors.BROWN, 'shield', equippable=equippable_component)
+			item = Entity(x, y, '[', Colors.BROWN, 'shield', equippable=equippable_component,
+				description='+2 defense')
 		elif random_equip_type == 'lantern':
 			equippable_component = Equippable(EquipmentSlots.OFF_HAND, fov_bonus=3)
-			item = Entity(x, y, '(', Colors.YELLOW, 'lantern', equippable=equippable_component)
+			item = Entity(x, y, '(', Colors.YELLOW, 'lantern', equippable=equippable_component,
+				description='+3 light radius')
 		elif random_equip_type == 'leather cap':
 			equippable_component = Equippable(EquipmentSlots.HEAD, defense_bonus=2)
-			item = Entity(x, y, '^', Colors.BROWN, 'leather cap', equippable=equippable_component)
+			item = Entity(x, y, '^', Colors.BROWN, 'leather cap', equippable=equippable_component,
+				description='+2 defense')
 		elif random_equip_type == 'steel visor':
 			equippable_component = Equippable(EquipmentSlots.HEAD, defense_bonus=2, armor_bonus=1, max_hp_bonus=5, accuracy_bonus=-2)
-			item = Entity(x, y, '^', Colors.GRAY, 'steel visor', equippable=equippable_component)
+			item = Entity(x, y, '^', Colors.GRAY, 'steel visor', equippable=equippable_component,
+				description='+2 defense, +1 armor, +5 max HP, -2 accuracy')
 		elif random_equip_type == 'leather armor':
 			equippable_component = Equippable(EquipmentSlots.BODY, defense_bonus=3, max_hp_bonus=5)
-			item = Entity(x, y, '#', Colors.BROWN, 'leather armor', equippable=equippable_component)
+			item = Entity(x, y, '#', Colors.BROWN, 'leather armor', equippable=equippable_component,
+				description='+3 defense, +5 max HP')
 		elif random_equip_type == 'chain mail':
 			equippable_component = Equippable(EquipmentSlots.BODY, defense_bonus=1, armor_bonus=2, max_hp_bonus=10, accuracy_bonus=-2)
-			item = Entity(x, y, '#', Colors.GOLD, 'chain mail', equippable=equippable_component)
+			item = Entity(x, y, '#', Colors.GOLD, 'chain mail', equippable=equippable_component,
+				description='+1 defense, +2 armor, +10 max HP, -2 accuracy')
 		elif random_equip_type =='leather boots':
 			equippable_component = Equippable(EquipmentSlots.FEET, defense_bonus=1, max_hp_bonus=3)
-			item = Entity(x, y, ')', Colors.BROWN, 'leather boots', equippable=equippable_component)
+			item = Entity(x, y, ')', Colors.BROWN, 'leather boots', equippable=equippable_component,
+				description='+1 defense, +3 max HP')
 		elif random_equip_type =='greaves':
 			equippable_component = Equippable(EquipmentSlots.FEET, defense_bonus=1, armor_bonus=1, max_hp_bonus=5, accuracy_bonus=-1)
-			item = Entity(x, y, ')', Colors.GOLD, 'greaves', equippable=equippable_component)
+			item = Entity(x, y, ')', Colors.GOLD, 'greaves', equippable=equippable_component,
+				description='+1 defense, +1 armor, +5 max HP, -1 accuracy')
 		elif random_equip_type == 'gauntlets of dexterity':
 			equippable_component = Equippable(EquipmentSlots.HANDS, accuracy_bonus=5)
-			item = Entity(x, y, ':', Colors.DARK_GREEN, 'gauntlets of dexterity', equippable=equippable_component)
+			item = Entity(x, y, ':', Colors.DARK_GREEN, 'gauntlets of dexterity', equippable=equippable_component,
+				description='+5 accuracy')
 		elif random_equip_type == 'gauntlets of power':
 			equippable_component = Equippable(EquipmentSlots.HANDS, power_bonus=1, carry_capacity_bonus=6)
-			item = Entity(x, y, ':', Colors.DARK_RED, 'gauntlets of power', equippable=equippable_component)
+			item = Entity(x, y, ':', Colors.DARK_RED, 'gauntlets of power', equippable=equippable_component,
+				description='+1 power, +6 carry capacity')
 		elif random_equip_type == 'bracers of defense':
 			item_level = int(get_random_key(self.ilvl))
 			DR = 0
 			if item_level > 3:
 				DR = 1
+				desc ='+{0} defense, +{1} DR'.format(item_level, DR)
+			else:
+				desc ='+{0} defense'.format(item_level)
 			equippable_component = Equippable(EquipmentSlots.HANDS, defense_bonus=item_level, armor_bonus=DR)
-			item = Entity(x, y, ':', Colors.VIOLET, 'bracers of defense +{0}'.format(item_level), equippable=equippable_component)
+			item = Entity(x, y, ':', Colors.VIOLET, 'bracers of defense +{0}'.format(item_level), equippable=equippable_component,
+				description=desc)
 		elif random_equip_type == 'elven cloak':
 			equippable_component = Equippable(EquipmentSlots.CLOAK, stealth_bonus=3)
-			item = Entity(x, y, '&', Colors.GREEN, 'elven cloak', equippable=equippable_component)
+			item = Entity(x, y, '&', Colors.GREEN, 'elven cloak', equippable=equippable_component,
+				description='+3 stealth')
 		else:
 			equippable_component = Equippable(EquipmentSlots.CLOAK, defense_bonus=3, accuracy_bonus=3)
-			item = Entity(x, y, '&', Colors.BLUE, 'displacement cloak', equippable=equippable_component)
+			item = Entity(x, y, '&', Colors.BLUE, 'displacement cloak', equippable=equippable_component,
+				description='+3 defense, +3 accuracy')
 
 		return item

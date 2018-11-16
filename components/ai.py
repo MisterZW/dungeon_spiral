@@ -105,9 +105,16 @@ class SpyMonster:
 	def take_turn(self, target, game_map):
 		results = []
 		monster = self.owner
+		player = game_map.player
 
+		#track unstealthed players even outside of fov
+		#move toward stealthed players only if inside of normal enemy FOV range
 		if monster.distance_to(target) >= 2:
-			monster.move_towards(target.x, target.y, game_map)
+			if player.equipment.stealth_bonus > 0:
+				if game_map.fov[monster.x, monster.y]:
+					monster.move_towards(target.x, target.y, game_map)
+			else:
+				monster.move_towards(target.x, target.y, game_map)
 
 		elif target.fighter.hp > 0:
 			if monster.fighter.roll_to_hit(target):

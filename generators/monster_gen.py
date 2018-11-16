@@ -39,18 +39,18 @@ class MonsterGenerator:
 			fighter_component = Fighter(hp=10, defense=0, power=3, accuracy=0, xp=25)
 			ai_component = BasicMonster()
 			monster = Entity(x, y, 'g', Colors.GREEN, 'Garden Gnome', impassable=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, 
-				ai=ai_component)
+				ai=ai_component, description='garden-variety trouble')
 		elif random_monster == 'Hill Dwarf':
 			fighter_component = Fighter(hp=16, defense=1, power=4, accuracy=1, xp=75)
 			ai_component = BasicMonster()
 			monster = Entity(x, y, 'h', Colors.BLUE, 'Hill Dwarf', impassable=True, render_order=RenderOrder.ACTOR,
-				fighter=fighter_component, ai=ai_component)
+				fighter=fighter_component, ai=ai_component, description='tenacious, greedy, and bearded')
 		elif random_monster == 'Behemoth Troll':
 			fighter_component = Fighter(hp=32, defense=4, power=8, accuracy=6, armor=2, xp=250)
 			ai_component = BasicMonster()
 			regen_component = Regeneration(fighter_component, permanent=True)
 			monster = Entity(x, y, 'T', Colors.DARK_GREEN, 'Behemoth Troll', impassable=True, render_order=RenderOrder.ACTOR,
-				fighter=fighter_component, ai=ai_component, regeneration = regen_component)
+				fighter=fighter_component, ai=ai_component, regeneration = regen_component, description='nasty, regenerating, and stupid')
 		elif random_monster == 'Gnomish Firebomber':	
 			fighter_component = Fighter(hp=10, defense=3, power=0, accuracy=0, xp=50)
 			ai_component = SuicideMonster()
@@ -60,17 +60,17 @@ class MonsterGenerator:
 			inventory_component = Inventory(1)
 			inventory_component.silent_add(item)
 			monster = Entity(x, y, 'g', Colors.RED, 'Gnomish Firebomber', impassable=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, 
-				ai=ai_component, inventory=inventory_component)
+				ai=ai_component, inventory=inventory_component, description='packing heat and a deathwish')
 		elif random_monster == 'Orcish Spy':
 			fighter_component = Fighter(hp=16, defense=1, power=1, accuracy=2, xp=100)
 			ai_component = SpyMonster()
 			monster = Entity(x, y, 'o', Colors.BLACK, 'Orcish Spy', impassable=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, 
-				ai=ai_component)
+				ai=ai_component, description='he will find you')
 		else:
 			fighter_component = Fighter(hp=20, defense=0, power=0, accuracy=2, xp=100)
 			inventory_component = Inventory(3)
 			ai_component = ThiefMonster()
 			monster = Entity(x, y, 'n', Colors.BROWN, 'Obnoxious Nymph', impassable=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, 
-				ai=ai_component, inventory=inventory_component)
+				ai=ai_component, inventory=inventory_component, description='pestilential but unarmed thief')
 
 		return monster

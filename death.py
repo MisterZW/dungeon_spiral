@@ -18,6 +18,7 @@ def kill_monster(monster, game_map):
 	monster.impassable = False
 	monster.fighter = None
 	monster.ai = None
+	monster.description = None
 	monster.name = 'A ' + monster.name + ' corpse'
 	monster.render_order = RenderOrder.CORPSE
 

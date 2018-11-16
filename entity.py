@@ -19,7 +19,8 @@ class Entity:
 	"""
 	
 	def __init__(self, x, y, char, color, name, impassable=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None, 
-		item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None, regeneration=None, vendor=None):
+		item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None, regeneration=None, vendor=None,
+		description=None):
 
 		#BASE TRAITS WHICH ALL ENTITIES POSSESS	
 		self.x = x
@@ -27,6 +28,7 @@ class Entity:
 		self.char = char
 		self.color = color
 		self.name = name
+		self.description = description
 		self.impassable = impassable
 		self.render_order = render_order
 

@@ -12,6 +12,7 @@ def initialize_player(name):
     equipment_component = Equipment()
 
     player = Entity(0, 0, '@', Colors.WHITE, name, impassable=True, render_order=RenderOrder.ACTOR,
-    	fighter=fighter_component, inventory=inventory_component, level=level_component, equipment=equipment_component)
+    	fighter=fighter_component, inventory=inventory_component, level=level_component, equipment=equipment_component,
+    	description = 'an intrepid adventurer')
 
     return player

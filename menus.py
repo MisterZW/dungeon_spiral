@@ -5,7 +5,7 @@ from colors import Colors
 from components.equipment_slots import EquipmentSlots
 from input_handlers import handle_player_name_keys
 
-def menu(display, header, options, width):
+def menu(display, header, options, width, inv=False, vendor=None, mouse_coords=None):
     con = display.con
     root = display.root_console
 
@@ -24,22 +24,32 @@ def menu(display, header, options, width):
     for i, line in enumerate(header_wrapped):
         window.draw_str(0, 0 + i, header_wrapped[i])
 
+    blit_x = display.SCREEN_WIDTH // 2 - width // 2
+    blit_y = display.SCREEN_HEIGHT // 2 - height // 2
+
     y = header_height
     letter_index = ord('a')
     for option_text in options:
         text = '(' + chr(letter_index) + ') ' + option_text
         window.draw_str(0, y, text, bg=None)
+        if inv:
+            mousex, mousey = mouse_coords
+            if mousey == (blit_y) + y and mousex >= blit_x and mousex <= (blit_x + width):
+                display.draw_inv_listings(letter_index - 97)
+        elif vendor:
+            mousex, mousey = mouse_coords
+            if mousey == (blit_y) + y and mousex >= blit_x and mousex <= (blit_x + width):
+                display.draw_vendor_listings(vendor, letter_index - 97)
         y += 1
         letter_index += 1
 
     # blit the contents of "window" to the root console
-    x = display.SCREEN_WIDTH // 2 - width // 2
-    y = display.SCREEN_HEIGHT // 2 - height // 2
-    root.blit(window, x, y, width, height, 0, 0)
+    
+    root.blit(window, blit_x, blit_y, width, height, 0, 0)
 
 #shows a menu with each inventory item as an ordinal option
 #shows which items are equipped as well as the # of charges remaining on wands
-def inventory_menu(display, header, player):
+def inventory_menu(display, header, player, mouse_xy):
     inventory_width = 50
 
     descriptors = [None, '(in main hand)', '(in off hand)', '(on head)', '(on body)', '(on feet)', '(on hands)',
@@ -59,29 +69,29 @@ def inventory_menu(display, header, player):
         else:
             options.append(item.name)
 
-    menu(display, header, options, inventory_width)
+    menu(display, header, options, inventory_width, inv=True, mouse_coords=mouse_xy)
 
 def vendor_main_menu(display, header, player):
-    menu_width = 45
+    menu_width = 27
     options = [' BUY', ' SELL', ' EXIT']
 
     menu(display, header, options, menu_width)
 
-def vendor_sell_menu(display, header, player, vendor):
-    menu_width = 45
+def vendor_sell_menu(display, header, player, vendor, mouse_xy):
+    menu_width = 32
     options = []
     for item in vendor.vendor.stock:
         options.append(item.name)
 
-    menu(display, header, options, menu_width)
+    menu(display, header, options, menu_width, vendor=vendor, mouse_coords=mouse_xy)
 
-def vendor_buy_menu(display, header, player, vendor):
-    menu_width = 45
+def vendor_buy_menu(display, header, player, vendor, mouse_xy):
+    menu_width = 32
     options = []
     for item in player.inventory.items:
         options.append(item.name)
 
-    menu(display, header, options, menu_width)
+    menu(display, header, options, menu_width, inv=True, mouse_coords=mouse_xy)
 
 def main_menu(display, background_image):
 

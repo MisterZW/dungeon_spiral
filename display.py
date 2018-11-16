@@ -6,6 +6,7 @@ from game_states import GameStates
 from menus import inventory_menu, level_up_menu, character_screen, vendor_main_menu, vendor_buy_menu, vendor_sell_menu, controls_screen
 import tdl
 import math
+import itertools
 
 class Display:
 
@@ -85,7 +86,9 @@ class Display:
         self.panel.draw_str(1, 0, '{0}'.format(player.name), fg=Colors.WHITE, bg=None)
         self.panel.draw_str(1, 5, 'DUNGEON LEVEL: {0}'.format(self.gmap.dlvl), fg=Colors.WHITE, bg=None)
         self.panel.draw_str(1, 6, 'CASHOLA: {0}'.format(player.inventory.cashola), fg=Colors.YELLOW, bg=None)
-        self.con.draw_str(1, 1, self.get_mouse_targets(mouse_xy))
+
+        if game_state not in {GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.VENDOR_SELL, GameStates.VENDOR_BUY}:
+            self.draw_mouse_targets(mouse_xy)
 
         self.root_console.blit(self.panel, 0, self.PANEL_Y, self.SCREEN_WIDTH, self.PANEL_HEIGHT, 0, 0)
 
@@ -94,7 +97,7 @@ class Display:
                 prompt = 'Select an item to use, or press ESC to cancel.\n'
             else: 
                 prompt = 'Select an item to drop, or press ESC to cancel.\n'
-            inventory_menu(self, prompt, player)
+            inventory_menu(self, prompt, player, mouse_xy)
 
         elif game_state == GameStates.CHARACTER_SCREEN:
             character_screen(self, player)
@@ -106,30 +109,65 @@ class Display:
             level_up_menu(self, 'LEVEL UP! CHOOSE WHICH STAT TO ADVANCE:', player)
 
         elif game_state == GameStates.VENDOR_SELECT:
-            vendor_main_menu(self, 'HOW CAN I HELP YOU TODAY?', player)
+            vendor_main_menu(self, ' HOW CAN I HELP YOU TODAY?', player)
 
         elif game_state == GameStates.VENDOR_SELL:
             vendor = None
             for entity in render_ordered_entities:
                 if entity.vendor and entity.x == player.x and entity.y == player.y:
                     vendor = entity
-            vendor_sell_menu(self, 'WHAT WOULD YOU LIKE TO BUY?', player, vendor)
+            vendor_sell_menu(self, 'WHAT WOULD YOU LIKE TO BUY?', player, vendor, mouse_xy)
 
         elif game_state == GameStates.VENDOR_BUY:
             vendor = None
             for entity in render_ordered_entities:
                 if entity.vendor and entity.x == player.x and entity.y == player.y:
                     vendor = entity
-            vendor_buy_menu(self, 'WHAT WOULD YOU LIKE TO SELL?', player, vendor)
+            vendor_buy_menu(self, 'WHAT WOULD YOU LIKE TO SELL?', player, vendor, mouse_xy)
+
+    def draw_inv_listings(self, index):
+        player = self.gmap.player
+        if index < len(player.inventory.items):
+            name = player.inventory.items[index].name
+            description = player.inventory.items[index].description
+        else:
+            return
+        if description:
+            self.con.draw_str(1, 1, '{0}: {1}'.format(name, description)) 
+        else:
+            self.con.draw_str(1, 1, name)
+
+    def draw_vendor_listings(self, vendor, index):
+        if index < len(vendor.vendor.stock):
+            name = vendor.vendor.stock[index].name
+            description = vendor.vendor.stock[index].description
+        else:
+            return
+        if description:
+            self.con.draw_str(1, 1, '{0}: {1}'.format(name, description)) 
+        else:
+            self.con.draw_str(1, 1, name)
+
+    #display a list of descriptions listed on the current mouse panel
+    def draw_mouse_targets(self, mouse_xy):
+        mouse_target_names, mouse_target_descriptions = self.get_mouse_targets(mouse_xy)
+        line = 1
+        for name, description in itertools.zip_longest(mouse_target_names, mouse_target_descriptions):
+            if description:
+                self.con.draw_str(1, line, '{0}: {1}'.format(name, description)) 
+            else:
+                self.con.draw_str(1, line, name) 
+            line += 1
 
     #get the name of entities selected by the cursor
     def get_mouse_targets(self, mouse_coordinates):
         x, y = mouse_coordinates
 
         matches = [entity.name for entity in self.gmap.entities if self.gmap.fov[entity.x, entity.y] and entity.x == x and entity.y == y]
-        names = ', '.join(matches)
+        desc_matches = [entity.description for entity in self.gmap.entities if self.gmap.fov[entity.x, entity.y] and entity.x == x and entity.y == y]
+        #names = ', '.join(matches)
 
-        return names.capitalize()
+        return matches, desc_matches
 
     def clear_all(self):
         clear(self.con, self.gmap.entities)
