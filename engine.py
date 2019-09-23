@@ -14,14 +14,15 @@ from game_states import GameStates
 from death import kill_player, kill_monster
 from generators.player import initialize_player
 
+
 def main():
     tdl.set_font('arial12x12.png', greyscale=True, altLayout=True)
-    display = Display()  #missing game_map, has an empty log
+    display = Display()  # missing game_map, has an empty log
 
     show_main_menu = True
     show_load_error = False
     player = None
-    entities= []
+    entities = []
     state = GameStates.PLAYER_TURN
     game_map = None
 
@@ -48,7 +49,7 @@ def main():
 
             new = action.get('new')
             load = action.get('load')
-            exit = action.get ('exit')
+            exit = action.get('exit')
             fullscreen = action.get('fullscreen')
 
             if fullscreen:
@@ -59,7 +60,8 @@ def main():
                 player_name = player_name_select(display)
                 if not player_name:
                     continue
-                player, entities, game_map, state = initialize(display, player_name)
+                player, entities, game_map, state = initialize(
+                    display, player_name)
                 display.write(Message('Chop wood, carry water.'))
                 show_main_menu = False
             elif load:
@@ -67,27 +69,30 @@ def main():
                     player, entities, game_map, log, state = load_game()
                     display.gmap = game_map
                     display.log = log
-                    display.write(Message('Ah, {0} returns. Welcome back.'.format(player.name)))
+                    display.write(Message(
+                        'Ah, {0} returns. Welcome back.'.format(player.name)))
                     show_main_menu = False
                 except FileNotFoundError:
                     show_load_error = True
             elif exit:
                 break
 
-        else:         
+        else:
             play(player, entities, game_map, display, state)
 
             display.root_console.clear()
             display.con.clear()
             display.panel.clear()
 
-            #need to reset message log, player inventory, etc if exiting and returning to main menu
+            # need to reset message log, player inventory, etc
+            # if exiting and returning to main menu
             show_main_menu = True
             show_load_error = False
             display = Display()
             player = None
             game_map = None
             entities = []
+
 
 def play(player, entities, game_map, display, state):
 
@@ -96,7 +101,7 @@ def play(player, entities, game_map, display, state):
     targeting_item = None
 
     while not tdl.event.is_window_closed():
-        
+
         game_map.player_FOV()
         display.render_all(mouse_coordinates, state, targeting_item)
         tdl.flush()
@@ -149,8 +154,9 @@ def play(player, entities, game_map, display, state):
             if state in (GameStates.VENDOR_BUY, GameStates.VENDOR_SELL):
                 state = prev_state
                 prev_state = GameStates.PLAYER_TURN
-            elif state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN,
-                GameStates.VENDOR_SELECT, GameStates.SHOW_CONTROLS):
+            elif state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY,
+                           GameStates.CHARACTER_SCREEN, GameStates.VENDOR_SELECT,
+                           GameStates.SHOW_CONTROLS):
                 state = prev_state
             elif state in (GameStates.TARGETING, GameStates.DIRECTIONAL_TARGETING):
                 player_turn_results.append({'targeting_cancelled': True})
@@ -168,7 +174,7 @@ def play(player, entities, game_map, display, state):
                     if target:
                         attack_results = player.fighter.attack(target)
                         player_turn_results.extend(attack_results)
-                    else:   
+                    else:
                         player.move(dx, dy)
                     state = GameStates.ENEMY_TURN
                 else:
@@ -213,7 +219,8 @@ def play(player, entities, game_map, display, state):
         if inventory_index is not None and prev_state != GameStates.PLAYER_DEAD and inventory_index < len(player.inventory.items):
             item = player.inventory.items[inventory_index]
             if state == GameStates.SHOW_INVENTORY:
-                player_turn_results.extend(player.inventory.use(item, game_map=game_map, source=player))
+                player_turn_results.extend(player.inventory.use(
+                    item, game_map=game_map, source=player))
             else:
                 player_turn_results.extend(player.inventory.drop(item))
 
@@ -240,11 +247,11 @@ def play(player, entities, game_map, display, state):
                     display.write(Message('I\'m afraid you can\'t afford that item.', Colors.YELLOW))
                 else:
                     item = vendor.vendor.sell(sell_index)
-                    
+
             if item:
                 player.inventory.silent_add(item)
                 player.inventory.cashola -= item.item.price
-            
+
         if go_down and state == GameStates.PLAYER_TURN:
             for entity in entities:
                 if entity.stairs and entity.x == player.x and entity.y == player.y:
@@ -265,14 +272,16 @@ def play(player, entities, game_map, display, state):
         if state == GameStates.TARGETING:
             if left_click:
                 target_x, target_y = left_click
-                item_use_results = player.inventory.use(targeting_item, game_map=game_map, target_x=target_x, target_y=target_y)
+                item_use_results = player.inventory.use(
+                    targeting_item, game_map=game_map, target_x=target_x, target_y=target_y)
                 player_turn_results.extend(item_use_results)
             elif right_click:
                 player_turn_results.append({'targeting_cancelled': True})
 
         if state == GameStates.DIRECTIONAL_TARGETING:
             if direction_selected:
-                item_use_results = player.inventory.use(targeting_item, game_map=game_map, direction=direction_selected)
+                item_use_results = player.inventory.use(
+                    targeting_item, game_map=game_map, direction=direction_selected)
                 player_turn_results.extend(item_use_results)
 
         if level_up:
@@ -302,7 +311,7 @@ def play(player, entities, game_map, display, state):
             item_consumed = player_result.get('consumed')
             item_dropped = player_result.get('item_dropped')
             equip = player_result.get('equip')
-            charge_used = player_result.get('charge_used') 
+            charge_used = player_result.get('charge_used')
             targeting = player_result.get('targeting')
             directional_targeting = player_result.get('directional_targeting')
             targeting_cancelled = player_result.get('targeting_cancelled')
@@ -354,11 +363,12 @@ def play(player, entities, game_map, display, state):
             if xp:
                 leveled_up = player.level.add_xp(xp)
                 if leveled_up:
-                    display.write(Message('Welcome to level {0}!'.format(player.level.current_level), Colors.LIGHT_RED))
+                    display.write(Message('Welcome to level {0}!'.format(
+                        player.level.current_level), Colors.LIGHT_RED))
                     prev_state = state
                     state = GameStates.LEVEL_UP
 
-            #canceling from targeting will return to PLAYER mode, not INVENTORY
+            # canceling from targeting will return to PLAYER mode, not INVENTORY
             if targeting:
                 prev_state = GameStates.PLAYER_TURN
                 state = GameStates.TARGETING
@@ -400,7 +410,7 @@ def play(player, entities, game_map, display, state):
 
                     if state == GameStates.PLAYER_DEAD:
                             break
-            else:                
+            else:
                 state = GameStates.PLAYER_TURN
 
 
@@ -413,8 +423,9 @@ def initialize(display, player_name):
 
     return player, entities, game_map, state
 
-#make sure player's HP doesn't exceed maximum
-#can occur when removing (or having stolen) gear which increases max HP
+
+# make sure player's HP doesn't exceed maximum
+# can occur when removing (or having stolen) gear which increases max HP
 def sanity_check(player):
     if player.fighter.hp > player.fighter.max_hp:
         player.fighter.hp = player.fighter.max_hp
